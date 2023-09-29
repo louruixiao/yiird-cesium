@@ -1,5 +1,5 @@
 {
-  "name": "@cesium/engine",
+  "name": "@yiird/cesium-engine",
   "version": "4.0.0",
   "description": "CesiumJS is a JavaScript library for creating 3D globes and 2D maps in a web browser without a plugin.",
   "keywords": [
@@ -54,11 +54,11 @@
   },
   "type": "module",
   "scripts": {
-    "build": "gulp build --workspace @cesium/engine",
-    "build-ts": "gulp buildTs --workspace @cesium/engine",
-    "coverage": "gulp coverage --workspace @cesium/engine",
-    "test": "gulp test --workspace @cesium/engine",
-    "postversion": "gulp postversion --workspace @cesium/engine"
+    "build": "gulp build --workspace @yiird/cesium-engine",
+    "build-ts": "gulp buildTs --workspace @yiird/cesium-engine",
+    "coverage": "gulp coverage --workspace @yiird/cesium-engine",
+    "test": "gulp test --workspace @yiird/cesium-engine",
+    "postversion": "gulp postversion --workspace @yiird/cesium-engine"
   },
   "repository": {
     "type": "git",
