@@ -147,7 +147,6 @@ export async function build() {
   // Configure build target.
   const workspace = argv.workspace ? argv.workspace : undefined;
 
-  console.log("workspace", workspace);
   if (workspace === `@${scope}/engine`) {
     return buildEngine(buildOptions);
   } else if (workspace === `@${scope}/widgets`) {
@@ -1744,7 +1743,7 @@ function generateTypeScriptDefinitions(
 
   // Wrap the source to actually be inside of a declared cesium module
   // and add any workaround and private utility types.
-  source = `declare module "@${scope}/${workspaceName}" {
+  source = `declare module "@${scope}/cesium-${workspaceName}" {
 ${source}
 }
 `;
@@ -1757,7 +1756,7 @@ ${source}
       );
       imports += `import { ${workspaceModules.join(
         ",\n"
-      )} } from "@${scope}/${workspace}";\n`;
+      )} } from "@${scope}/cesium-${workspace}";\n`;
     });
     source = imports + source;
   }
@@ -1942,7 +1941,7 @@ function createTypeScriptDefinitions() {
 
   // Wrap the source to actually be inside of a declared cesium module
   // and add any workaround and private utility types.
-  source = `declare module "cesium" {
+  source = `declare module "@yiird/cesium" {
 ${source}
 }
 
