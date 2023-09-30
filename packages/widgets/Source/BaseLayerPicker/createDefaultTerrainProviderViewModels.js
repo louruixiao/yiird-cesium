@@ -2,7 +2,7 @@ import {
   buildModuleUrl,
   createWorldTerrainAsync,
   EllipsoidTerrainProvider,
-} from "@cesium/engine";
+} from "@yiird/cesium-engine";
 import ProviderViewModel from "./ProviderViewModel.js";
 
 /**

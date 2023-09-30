@@ -4,7 +4,7 @@ import {
   GlobeSurfaceTile,
   TerrainState,
   Texture,
-} from "@cesium/engine";
+} from "@yiird/cesium-engine";
 
 function TerrainTileProcessor(
   frameState,

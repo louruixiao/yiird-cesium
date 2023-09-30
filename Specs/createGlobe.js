@@ -1,4 +1,4 @@
-import { defaultValue, Ellipsoid, Event } from "@cesium/engine";
+import { defaultValue, Ellipsoid, Event } from "@yiird/cesium-engine";
 
 function createGlobe(ellipsoid) {
   ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);

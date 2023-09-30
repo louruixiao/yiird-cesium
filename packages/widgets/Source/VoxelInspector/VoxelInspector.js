@@ -6,7 +6,7 @@ import {
   Ellipsoid,
   getElement,
   VoxelShapeType,
-} from "@cesium/engine";
+} from "@yiird/cesium-engine";
 import knockout from "../ThirdParty/knockout.js";
 import InspectorShared from "../InspectorShared.js";
 import VoxelInspectorViewModel from "./VoxelInspectorViewModel.js";

@@ -147,6 +147,7 @@ export async function build() {
   // Configure build target.
   const workspace = argv.workspace ? argv.workspace : undefined;
 
+  console.log("workspace", workspace);
   if (workspace === `@${scope}/engine`) {
     return buildEngine(buildOptions);
   } else if (workspace === `@${scope}/widgets`) {

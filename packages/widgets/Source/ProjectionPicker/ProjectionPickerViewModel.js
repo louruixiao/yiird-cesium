@@ -5,7 +5,7 @@ import {
   EventHelper,
   OrthographicFrustum,
   SceneMode,
-} from "@cesium/engine";
+} from "@yiird/cesium-engine";
 import knockout from "../ThirdParty/knockout.js";
 import createCommand from "../createCommand.js";
 

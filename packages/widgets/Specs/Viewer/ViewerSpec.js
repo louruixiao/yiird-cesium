@@ -32,7 +32,7 @@ import {
   ShadowMode,
   TimeDynamicPointCloud,
   VoxelPrimitive,
-} from "@cesium/engine";
+} from "@yiird/cesium-engine";
 
 import {
   Animation,

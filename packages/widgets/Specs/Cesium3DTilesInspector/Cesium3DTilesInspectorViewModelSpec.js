@@ -1,4 +1,8 @@
-import { Cesium3DTileset, Cesium3DTileStyle, Globe } from "@cesium/engine";
+import {
+  Cesium3DTileset,
+  Cesium3DTileStyle,
+  Globe,
+} from "@yiird/cesium-engine";
 import { Cesium3DTilesInspectorViewModel } from "../../index.js";
 import createScene from "../../../../Specs/createScene.js";
 

@@ -71,10 +71,14 @@ uniform vec4 u_cartographicLimitRectangle;
 uniform vec2 u_nightFadeDistance;
 #endif
 
-#ifdef ENABLE_CLIPPING_PLANES
+#if defined(ENABLE_CLIPPING_PLANES) || defined(ENABLE_MULTI_CLIPPING_PLANES)
 uniform highp sampler2D u_clippingPlanes;
 uniform mat4 u_clippingPlanesMatrix;
 uniform vec4 u_clippingPlanesEdgeStyle;
+#endif
+
+#ifdef ENABLE_MULTI_CLIPPING_PLANES
+uniform mediump sampler2D u_multiClippingPlanesLength;
 #endif
 
 #if defined(GROUND_ATMOSPHERE) || defined(FOG) && defined(DYNAMIC_ATMOSPHERE_LIGHTING) && (defined(ENABLE_VERTEX_LIGHTING) || defined(ENABLE_DAYNIGHT_SHADING))
@@ -128,8 +132,7 @@ in float v_atmosphereOpacity;
 #endif
 
 #if defined(UNDERGROUND_COLOR) || defined(TRANSLUCENT)
-float interpolateByDistance(vec4 nearFarScalar, float distance)
-{
+float interpolateByDistance(vec4 nearFarScalar, float distance) {
     float startDistance = nearFarScalar.x;
     float startValue = nearFarScalar.y;
     float endDistance = nearFarScalar.z;
@@ -140,17 +143,14 @@ float interpolateByDistance(vec4 nearFarScalar, float distance)
 #endif
 
 #if defined(UNDERGROUND_COLOR) || defined(TRANSLUCENT) || defined(APPLY_MATERIAL)
-vec4 alphaBlend(vec4 sourceColor, vec4 destinationColor)
-{
+vec4 alphaBlend(vec4 sourceColor, vec4 destinationColor) {
     return sourceColor * vec4(sourceColor.aaa, 1.0) + destinationColor * (1.0 - sourceColor.a);
 }
 #endif
 
 #ifdef TRANSLUCENT
-bool inTranslucencyRectangle()
-{
-    return
-        v_textureCoordinates.x > u_translucencyRectangle.x &&
+bool inTranslucencyRectangle() {
+    return v_textureCoordinates.x > u_translucencyRectangle.x &&
         v_textureCoordinates.x < u_translucencyRectangle.z &&
         v_textureCoordinates.y > u_translucencyRectangle.y &&
         v_textureCoordinates.y < u_translucencyRectangle.w;
@@ -173,8 +173,8 @@ vec4 sampleAndBlend(
     float textureOneOverGamma,
     float split,
     vec4 colorToAlpha,
-    float nightBlend)
-{
+    float nightBlend
+) {
     // This crazy step stuff sets the alpha to 0.0 if this following condition is true:
     //    tileTextureCoordinates.s < textureCoordinateRectangle.s ||
     //    tileTextureCoordinates.s > textureCoordinateRectangle.p ||
@@ -217,11 +217,11 @@ vec4 sampleAndBlend(
     float splitPosition = czm_splitPosition;
     // Split to the left
     if (split < 0.0 && gl_FragCoord.x > splitPosition) {
-       alpha = 0.0;
+        alpha = 0.0;
     }
     // Split to the right
     else if (split > 0.0 && gl_FragCoord.x < splitPosition) {
-       alpha = 0.0;
+        alpha = 0.0;
     }
 #endif
 
@@ -287,8 +287,7 @@ vec4 computeWaterColor(vec3 positionEyeCoordinates, vec2 textureCoordinates, mat
 
 const float fExposure = 2.0;
 
-vec3 computeEllipsoidPosition()
-{
+vec3 computeEllipsoidPosition() {
     float mpp = czm_metersPerPixel(vec4(0.0, 0.0, -czm_currentFrustum.x, 1.0), 1.0);
     vec2 xy = gl_FragCoord.xy / czm_viewport.zw * 2.0 - vec2(1.0);
     xy *= czm_viewport.zw * mpp * 0.5;
@@ -304,18 +303,20 @@ vec3 computeEllipsoidPosition()
     return (czm_inverseView * vec4(ellipsoidPosition, 1.0)).xyz;
 }
 
-void main()
-{
+void main() {
 #ifdef TILE_LIMIT_RECTANGLE
     if (v_textureCoordinates.x < u_cartographicLimitRectangle.x || u_cartographicLimitRectangle.z < v_textureCoordinates.x ||
-        v_textureCoordinates.y < u_cartographicLimitRectangle.y || u_cartographicLimitRectangle.w < v_textureCoordinates.y)
-        {
-            discard;
-        }
+        v_textureCoordinates.y < u_cartographicLimitRectangle.y || u_cartographicLimitRectangle.w < v_textureCoordinates.y) {
+        discard;
+    }
 #endif
 
 #ifdef ENABLE_CLIPPING_PLANES
     float clipDistance = clip(gl_FragCoord, u_clippingPlanes, u_clippingPlanesMatrix);
+#endif
+
+#ifdef ENABLE_MULTI_CLIPPING_PLANES
+    float clipDistance = clip(gl_FragCoord, u_clippingPlanes, u_clippingPlanesMatrix, u_multiClippingPlanesLength);
 #endif
 
 #if defined(SHOW_REFLECTIVE_OCEAN) || defined(ENABLE_DAYNIGHT_SHADING) || defined(HDR)
@@ -336,25 +337,19 @@ void main()
     vec4 color = computeDayColor(u_initialColor, clamp(v_textureCoordinates, 0.0, 1.0), nightBlend);
 
 #ifdef SHOW_TILE_BOUNDARIES
-    if (v_textureCoordinates.x < (1.0/256.0) || v_textureCoordinates.x > (255.0/256.0) ||
-        v_textureCoordinates.y < (1.0/256.0) || v_textureCoordinates.y > (255.0/256.0))
-    {
+    if (v_textureCoordinates.x < (1.0 / 256.0) || v_textureCoordinates.x > (255.0 / 256.0) ||
+        v_textureCoordinates.y < (1.0 / 256.0) || v_textureCoordinates.y > (255.0 / 256.0)) {
         color = vec4(1.0, 0.0, 0.0, 1.0);
     }
 #endif
 
 #if defined(ENABLE_DAYNIGHT_SHADING) || defined(GROUND_ATMOSPHERE)
     float cameraDist;
-    if (czm_sceneMode == czm_sceneMode2D)
-    {
+    if (czm_sceneMode == czm_sceneMode2D) {
         cameraDist = max(czm_frustumPlanes.x - czm_frustumPlanes.y, czm_frustumPlanes.w - czm_frustumPlanes.z) * 0.5;
-    }
-    else if (czm_sceneMode == czm_sceneModeColumbusView)
-    {
+    } else if (czm_sceneMode == czm_sceneModeColumbusView) {
         cameraDist = -czm_view[3].z;
-    }
-    else
-    {
+    } else {
         cameraDist = length(czm_view[3]);
     }
     float fadeOutDist = u_lightingFadeDistance.x;
@@ -378,8 +373,7 @@ void main()
 
     float mask = texture(u_waterMask, waterMaskTextureCoordinates).r;
 
-    if (mask > 0.0)
-    {
+    if (mask > 0.0) {
         mat3 enuToEye = czm_eastNorthUpToEyeCoordinates(v_positionMC, normalEC);
 
         vec2 ellipsoidTextureCoordinates = czm_ellipsoidWgs84TextureCoordinates(normalMC);
@@ -396,7 +390,7 @@ void main()
     materialInput.st = v_textureCoordinates.st;
     materialInput.normalEC = normalize(v_normalEC);
     materialInput.positionToEyeEC = -v_positionEC;
-    materialInput.tangentToEyeMatrix = czm_eastNorthUpToEyeCoordinates(v_positionMC, normalize(v_normalEC));     
+    materialInput.tangentToEyeMatrix = czm_eastNorthUpToEyeCoordinates(v_positionMC, normalize(v_normalEC));
     materialInput.slope = v_slope;
     materialInput.height = v_height;
     materialInput.aspect = v_aspect;
@@ -416,13 +410,12 @@ void main()
     vec4 finalColor = color;
 #endif
 
-#ifdef ENABLE_CLIPPING_PLANES
+#if defined(ENABLE_CLIPPING_PLANES) || defined(ENABLE_MULTI_CLIPPING_PLANES)
     vec4 clippingPlanesEdgeColor = vec4(1.0);
     clippingPlanesEdgeColor.rgb = u_clippingPlanesEdgeStyle.rgb;
     float clippingPlanesEdgeWidth = u_clippingPlanesEdgeStyle.a;
 
-    if (clipDistance < clippingPlanesEdgeWidth)
-    {
+    if (clipDistance < clippingPlanesEdgeWidth) {
         finalColor = clippingPlanesEdgeColor;
     }
 #endif
@@ -438,11 +431,10 @@ void main()
 #endif
 
 #if defined(GROUND_ATMOSPHERE) || defined(FOG)
-    if (!czm_backFacing())
-    {
+    if (!czm_backFacing()) {
         bool dynamicLighting = false;
         #if defined(DYNAMIC_ATMOSPHERE_LIGHTING) && (defined(ENABLE_DAYNIGHT_SHADING) || defined(ENABLE_VERTEX_LIGHTING))
-            dynamicLighting = true;     
+        dynamicLighting = true;     
         #endif
 
         vec3 rayleighColor;
@@ -455,21 +447,15 @@ void main()
         // When the camera is far away (camera distance > nightFadeOutDistance), the scattering is computed in the fragment shader.
         // Otherwise, the scattering is computed in the vertex shader.
         #ifdef PER_FRAGMENT_GROUND_ATMOSPHERE
-            positionWC = computeEllipsoidPosition();
-            lightDirection = czm_branchFreeTernary(dynamicLighting, atmosphereLightDirection, normalize(positionWC));
-            computeAtmosphereScattering(
-                positionWC,
-                lightDirection,
-                rayleighColor,
-                mieColor,
-                opacity
-            );
+        positionWC = computeEllipsoidPosition();
+        lightDirection = czm_branchFreeTernary(dynamicLighting, atmosphereLightDirection, normalize(positionWC));
+        computeAtmosphereScattering(positionWC, lightDirection, rayleighColor, mieColor, opacity);
         #else
-            positionWC = v_positionMC;
-            lightDirection = czm_branchFreeTernary(dynamicLighting, atmosphereLightDirection, normalize(positionWC));
-            rayleighColor = v_atmosphereRayleighColor;
-            mieColor = v_atmosphereMieColor;
-            opacity = v_atmosphereOpacity;
+        positionWC = v_positionMC;
+        lightDirection = czm_branchFreeTernary(dynamicLighting, atmosphereLightDirection, normalize(positionWC));
+        rayleighColor = v_atmosphereRayleighColor;
+        mieColor = v_atmosphereMieColor;
+        opacity = v_atmosphereOpacity;
         #endif
 
         rayleighColor = colorCorrect(rayleighColor);
@@ -479,56 +465,55 @@ void main()
 
         // Fog is applied to tiles selected for fog, close to the Earth.
         #ifdef FOG
-            vec3 fogColor = groundAtmosphereColor.rgb;
-            
+        vec3 fogColor = groundAtmosphereColor.rgb;
+
             // If there is lighting, apply that to the fog.
             #if defined(DYNAMIC_ATMOSPHERE_LIGHTING) && (defined(ENABLE_VERTEX_LIGHTING) || defined(ENABLE_DAYNIGHT_SHADING))
-                float darken = clamp(dot(normalize(czm_viewerPositionWC), atmosphereLightDirection), u_minimumBrightness, 1.0);
-                fogColor *= darken;                
+        float darken = clamp(dot(normalize(czm_viewerPositionWC), atmosphereLightDirection), u_minimumBrightness, 1.0);
+        fogColor *= darken;                
             #endif
 
             #ifndef HDR
-                fogColor.rgb = czm_acesTonemapping(fogColor.rgb);
-                fogColor.rgb = czm_inverseGamma(fogColor.rgb);
+        fogColor.rgb = czm_acesTonemapping(fogColor.rgb);
+        fogColor.rgb = czm_inverseGamma(fogColor.rgb);
             #endif
-            
-            const float modifier = 0.15;
-            finalColor = vec4(czm_fog(v_distance, finalColor.rgb, fogColor.rgb, modifier), finalColor.a);
+
+        const float modifier = 0.15;
+        finalColor = vec4(czm_fog(v_distance, finalColor.rgb, fogColor.rgb, modifier), finalColor.a);
 
         #else
             // The transmittance is based on optical depth i.e. the length of segment of the ray inside the atmosphere.
             // This value is larger near the "circumference", as it is further away from the camera. We use it to
             // brighten up that area of the ground atmosphere.
-            const float transmittanceModifier = 0.5;
-            float transmittance = transmittanceModifier + clamp(1.0 - groundAtmosphereColor.a, 0.0, 1.0);
+        const float transmittanceModifier = 0.5;
+        float transmittance = transmittanceModifier + clamp(1.0 - groundAtmosphereColor.a, 0.0, 1.0);
 
-            vec3 finalAtmosphereColor = finalColor.rgb + groundAtmosphereColor.rgb * transmittance;
+        vec3 finalAtmosphereColor = finalColor.rgb + groundAtmosphereColor.rgb * transmittance;
 
             #if defined(DYNAMIC_ATMOSPHERE_LIGHTING) && (defined(ENABLE_VERTEX_LIGHTING) || defined(ENABLE_DAYNIGHT_SHADING))
-                float fadeInDist = u_nightFadeDistance.x;
-                float fadeOutDist = u_nightFadeDistance.y;
-            
-                float sunlitAtmosphereIntensity = clamp((cameraDist - fadeOutDist) / (fadeInDist - fadeOutDist), 0.05, 1.0);
-                float darken = clamp(dot(normalize(positionWC), atmosphereLightDirection), 0.0, 1.0);
-                vec3 darkenendGroundAtmosphereColor = mix(groundAtmosphereColor.rgb, finalAtmosphereColor.rgb, darken);
+        float fadeInDist = u_nightFadeDistance.x;
+        float fadeOutDist = u_nightFadeDistance.y;
 
-                finalAtmosphereColor = mix(darkenendGroundAtmosphereColor, finalAtmosphereColor, sunlitAtmosphereIntensity);
+        float sunlitAtmosphereIntensity = clamp((cameraDist - fadeOutDist) / (fadeInDist - fadeOutDist), 0.05, 1.0);
+        float darken = clamp(dot(normalize(positionWC), atmosphereLightDirection), 0.0, 1.0);
+        vec3 darkenendGroundAtmosphereColor = mix(groundAtmosphereColor.rgb, finalAtmosphereColor.rgb, darken);
+
+        finalAtmosphereColor = mix(darkenendGroundAtmosphereColor, finalAtmosphereColor, sunlitAtmosphereIntensity);
             #endif
-            
+
             #ifndef HDR
-                finalAtmosphereColor.rgb = vec3(1.0) - exp(-fExposure * finalAtmosphereColor.rgb);
+        finalAtmosphereColor.rgb = vec3(1.0) - exp(-fExposure * finalAtmosphereColor.rgb);
             #else
-                finalAtmosphereColor.rgb = czm_saturation(finalAtmosphereColor.rgb, 1.6);
+        finalAtmosphereColor.rgb = czm_saturation(finalAtmosphereColor.rgb, 1.6);
             #endif
-            
-            finalColor.rgb = mix(finalColor.rgb, finalAtmosphereColor.rgb, fade);
+
+        finalColor.rgb = mix(finalColor.rgb, finalAtmosphereColor.rgb, fade);
         #endif
     }
 #endif
 
 #ifdef UNDERGROUND_COLOR
-    if (czm_backFacing())
-    {
+    if (czm_backFacing()) {
         float distanceFromEllipsoid = max(czm_eyeHeight, 0.0);
         float distance = max(v_distance - distanceFromEllipsoid, 0.0);
         float blendAmount = interpolateByDistance(u_undergroundColorAlphaByDistance, distance);
@@ -538,27 +523,23 @@ void main()
 #endif
 
 #ifdef TRANSLUCENT
-    if (inTranslucencyRectangle())
-    {
-      vec4 alphaByDistance = gl_FrontFacing ? u_frontFaceAlphaByDistance : u_backFaceAlphaByDistance;
-      finalColor.a *= interpolateByDistance(alphaByDistance, v_distance);
+    if (inTranslucencyRectangle()) {
+        vec4 alphaByDistance = gl_FrontFacing ? u_frontFaceAlphaByDistance : u_backFaceAlphaByDistance;
+        finalColor.a *= interpolateByDistance(alphaByDistance, v_distance);
     }
 #endif
-    
-    out_FragColor =  finalColor;
-}
 
+    out_FragColor = finalColor;
+}
 
 #ifdef SHOW_REFLECTIVE_OCEAN
 
-float waveFade(float edge0, float edge1, float x)
-{
+float waveFade(float edge0, float edge1, float x) {
     float y = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
     return pow(1.0 - y, 5.0);
 }
 
-float linearFade(float edge0, float edge1, float x)
-{
+float linearFade(float edge0, float edge1, float x) {
     return clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
 }
 
@@ -576,8 +557,7 @@ const float oceanFrequencyHighAltitude = 125000.0;
 const float oceanAnimationSpeedHighAltitude = 0.008;
 const float oceanOneOverAmplitudeHighAltitude = 1.0 / 2.0;
 
-vec4 computeWaterColor(vec3 positionEyeCoordinates, vec2 textureCoordinates, mat3 enuToEye, vec4 imageryColor, float maskValue, float fade)
-{
+vec4 computeWaterColor(vec3 positionEyeCoordinates, vec2 textureCoordinates, mat3 enuToEye, vec4 imageryColor, float maskValue, float fade) {
     vec3 positionToEyeEC = -positionEyeCoordinates;
     float positionToEyeECLength = length(positionToEyeEC);
 
@@ -601,8 +581,7 @@ vec4 computeWaterColor(vec3 positionEyeCoordinates, vec2 textureCoordinates, mat
     // blend the 2 wave layers based on distance to surface
     float highAltitudeFade = linearFade(0.0, 60000.0, positionToEyeECLength);
     float lowAltitudeFade = 1.0 - linearFade(20000.0, 60000.0, positionToEyeECLength);
-    vec3 normalTangentSpace =
-        (highAltitudeFade * normalTangentSpaceHighAltitude) +
+    vec3 normalTangentSpace = (highAltitudeFade * normalTangentSpaceHighAltitude) +
         (lowAltitudeFade * normalTangentSpaceLowAltitude);
     normalTangentSpace = normalize(normalTangentSpace);
 

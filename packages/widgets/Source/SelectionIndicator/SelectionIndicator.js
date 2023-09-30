@@ -3,7 +3,7 @@ import {
   destroyObject,
   DeveloperError,
   getElement,
-} from "@cesium/engine";
+} from "@yiird/cesium-engine";
 import knockout from "../ThirdParty/knockout.js";
 import SelectionIndicatorViewModel from "./SelectionIndicatorViewModel.js";
 

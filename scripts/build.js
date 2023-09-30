@@ -282,7 +282,7 @@ function generateDeclaration(workspace, file) {
     assignmentName = `_shaders${assignmentName}`;
   }
   assignmentName = assignmentName.replace(/(\.|-)/g, "_");
-  return `export { ${assignmentName} } from '@${scope}/${workspace}';`;
+  return `export { ${assignmentName} } from '@${scope}/cesium-${workspace}';`;
 }
 
 /**

@@ -37,7 +37,7 @@ yarn add @cesium/engine
 Import individual modules to benefit from tree shaking optimizations through most build tools:
 
 ```js
-import { CesiumWidget } from "@cesium/engine";
+import { CesiumWidget } from "@yiird/cesium-engine";
 import "@cesium/engine/Source/Widget/CesiumWidget.css";
 
 const cesiumWidget = new CesiumWidget("cesiumContainer");

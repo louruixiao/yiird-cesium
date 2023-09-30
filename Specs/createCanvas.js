@@ -1,4 +1,4 @@
-import { defaultValue } from "@cesium/engine";
+import { defaultValue } from "@yiird/cesium-engine";
 
 let canvasCount = 0;
 
