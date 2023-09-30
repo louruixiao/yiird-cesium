@@ -12,7 +12,7 @@ import Matrix4 from "../Core/Matrix4.js";
 import Rectangle from "../Core/Rectangle.js";
 import Transforms from "../Core/Transforms.js";
 import ShaderSource from "../Renderer/ShaderSource.js";
-import PerInstanceColorAppearance from "../Scene/PerInstanceColorAppearance.js";
+import PerInstanceColorAppearance from "./PerInstanceColorAppearance.js";
 import ShadowVolumeAppearanceFS from "../Shaders/ShadowVolumeAppearanceFS.js";
 
 /**

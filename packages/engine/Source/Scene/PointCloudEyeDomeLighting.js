@@ -9,8 +9,8 @@ import FramebufferManager from "../Renderer/FramebufferManager.js";
 import Pass from "../Renderer/Pass.js";
 import RenderState from "../Renderer/RenderState.js";
 import ShaderSource from "../Renderer/ShaderSource.js";
-import BlendingState from "../Scene/BlendingState.js";
-import StencilConstants from "../Scene/StencilConstants.js";
+import BlendingState from "./BlendingState.js";
+import StencilConstants from "./StencilConstants.js";
 import PointCloudEyeDomeLightingShader from "../Shaders/PostProcessStages/PointCloudEyeDomeLighting.js";
 
 /**

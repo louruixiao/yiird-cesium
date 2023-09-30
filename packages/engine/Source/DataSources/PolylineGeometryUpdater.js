@@ -17,7 +17,7 @@ import oneTimeWarning from "../Core/oneTimeWarning.js";
 import PolylineGeometry from "../Core/PolylineGeometry.js";
 import PolylinePipeline from "../Core/PolylinePipeline.js";
 import ShowGeometryInstanceAttribute from "../Core/ShowGeometryInstanceAttribute.js";
-import Entity from "../DataSources/Entity.js";
+import Entity from "./Entity.js";
 import ClassificationType from "../Scene/ClassificationType.js";
 import GroundPolylinePrimitive from "../Scene/GroundPolylinePrimitive.js";
 import PolylineCollection from "../Scene/PolylineCollection.js";
