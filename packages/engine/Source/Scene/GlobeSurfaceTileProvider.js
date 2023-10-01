@@ -1832,7 +1832,7 @@ function createTileUniformMap(frameState, globeSurfaceTileProvider) {
         style.alpha = multiClippingPlanes.edgeWidth;
         return style;
       }
-      const style = this.properties.clippingPlanesEdgeColor;
+      const style = this.properties.clippingPlanesEdgeColor.clone();
       style.alpha = this.properties.clippingPlanesEdgeWidth;
       return style;
     },
@@ -2836,6 +2836,8 @@ function addDrawCommandsForTile(tileProvider, tile, frameState) {
     surfaceShaderSetOptions.enableFog = applyFog;
     surfaceShaderSetOptions.enableClippingPlanes = clippingPlanesEnabled;
     surfaceShaderSetOptions.clippingPlanes = clippingPlanes;
+    surfaceShaderSetOptions.multiClippingPlanes =
+      tileProvider._multiClippingPlanes;
     surfaceShaderSetOptions.hasImageryLayerCutout = applyCutout;
     surfaceShaderSetOptions.colorCorrect = colorCorrect;
     surfaceShaderSetOptions.highlightFillTile = highlightFillTile;

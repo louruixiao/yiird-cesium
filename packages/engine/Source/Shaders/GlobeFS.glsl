@@ -434,7 +434,7 @@ void main() {
     if (!czm_backFacing()) {
         bool dynamicLighting = false;
         #if defined(DYNAMIC_ATMOSPHERE_LIGHTING) && (defined(ENABLE_DAYNIGHT_SHADING) || defined(ENABLE_VERTEX_LIGHTING))
-        dynamicLighting = true;     
+        dynamicLighting = true;
         #endif
 
         vec3 rayleighColor;
@@ -470,7 +470,7 @@ void main() {
             // If there is lighting, apply that to the fog.
             #if defined(DYNAMIC_ATMOSPHERE_LIGHTING) && (defined(ENABLE_VERTEX_LIGHTING) || defined(ENABLE_DAYNIGHT_SHADING))
         float darken = clamp(dot(normalize(czm_viewerPositionWC), atmosphereLightDirection), u_minimumBrightness, 1.0);
-        fogColor *= darken;                
+        fogColor *= darken;
             #endif
 
             #ifndef HDR
