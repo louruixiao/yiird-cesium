@@ -29,7 +29,6 @@ const DEFAULT_COLOR_VALUE = BatchTexture.DEFAULT_COLOR_VALUE;
 const DEFAULT_SHOW_VALUE = BatchTexture.DEFAULT_SHOW_VALUE;
 
 /**
- * @private
  * @constructor
  */
 function Cesium3DTileBatchTable(
