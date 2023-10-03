@@ -550,7 +550,9 @@ export const postversion = async function () {
     return;
   }
   const directory = workspace.replaceAll(`@${scope}/`, ``);
-  const workspacePackageJson = require(`./packages/${directory}/package.json`);
+  console.log("directory:====>", directory);
+  const _package = directory.split("-")[1];
+  const workspacePackageJson = require(`./packages/${_package}/package.json`);
   const version = workspacePackageJson.version;
 
   // Iterate through all package JSONs that may depend on the updated package and
