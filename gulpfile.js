@@ -550,7 +550,6 @@ export const postversion = async function () {
     return;
   }
   const directory = workspace.replaceAll(`@${scope}/`, ``);
-  console.log("directory:====>", directory);
   const _package = directory.split("-")[1];
   const workspacePackageJson = require(`./packages/${_package}/package.json`);
   const version = workspacePackageJson.version;
