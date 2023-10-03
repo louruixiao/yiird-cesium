@@ -150,7 +150,7 @@
     "deploy-set-version": "gulp deploySetVersion",
     "prettier": "prettier --write --no-config \"**/*\"",
     "prettier-check": "prettier --check --no-config \"**/*\"",
-    "publish-all":"git add . && git commit -m 'publish release' && npm run release && npm run publish -w @yiird/cesium-engine && npm run publish -w @yiird/cesium-widgets && npm run publish",
+    "publish-all":"git add . && git commit -m 'publish release' && npm run release && npm publish -w @yiird/cesium-engine && npm publish -w @yiird/cesium-widgets && npm publish",
     "update-version":"npm version patch && npm version patch -w @yiird/cesium-engine && npm version patch -w @yiird/cesium-widgets",
     "publish-complete":"npm run publish-all && npm run update-version"
   },
