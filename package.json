@@ -1,6 +1,6 @@
 {
   "name": "@yiird/cesium",
-  "version": "1.109.9",
+  "version": "1.109.10",
   "description": "CesiumJS is a JavaScript library for creating 3D globes and 2D maps in a web browser without a plugin.",
   "homepage": "http://cesium.com/cesiumjs/",
   "license": "Apache-2.0",
@@ -150,9 +150,9 @@
     "deploy-set-version": "gulp deploySetVersion",
     "prettier": "prettier --write --no-config \"**/*\"",
     "prettier-check": "prettier --check --no-config \"**/*\"",
-    "publish":"git add . && git commit -m 'publish' && npm run release && npm run publish -w @yiird/cesium-engine && npm run publish -w @yiird/cesium-widgets && npm run publish",
+    "publish-all":"git add . && git commit -m 'publish release' && npm run release && npm run publish -w @yiird/cesium-engine && npm run publish -w @yiird/cesium-widgets && npm run publish",
     "update-version":"npm version patch && npm version patch -w @yiird/cesium-engine && npm version patch -w @yiird/cesium-widgets",
-    "publish-complete":"npm publish && npm run update-version"
+    "publish-complete":"npm run publish-all && npm run update-version"
   },
   "engines": {
     "node": ">=14.0.0"
