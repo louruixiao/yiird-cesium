@@ -152,7 +152,7 @@
     "prettier-check": "prettier --check --no-config \"**/*\"",
     "publish":"git add . && git commit -m 'publish' && npm run release && npm run publish -w @yiird/cesium-engine && npm run publish -w @yiird/cesium-widgets && npm run publish",
     "update-version":"npm version patch && npm version patch -w @yiird/cesium-engine && npm version patch -w @yiird/cesium-widgets",
-    "publish-complete":"publish && update-version"
+    "publish-complete":"npm publish && npm run update-version"
   },
   "engines": {
     "node": ">=14.0.0"
